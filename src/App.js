@@ -4,10 +4,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './components/auth/auth'; 
 import AdicionarProduto from './components/produto/adicionarProduto';
 import TestConnection from './components/backendTest/testarComunicacao';
+import TodosOsProdutos from './components/home/homeTodosProdutos';
 
 import Header from './components/header/header';
 
 import { ProdutoProvider } from './context/produtoContext';
+import { CarrinhoProvider } from './context/carrinhoContext';
 
 import styled from 'styled-components';
 
@@ -17,13 +19,16 @@ function App() {
   return (
     <Router>
       <ProdutoProvider>
-        <AppContainer>
-          <Header/>
-          <Routes>
-            <Route path="/cadastro" element={<Auth />} /> {}
-            <Route path="/adicionar-produto" element={<AdicionarProduto />} />
-          </Routes>
-        </AppContainer>
+        <CarrinhoProvider>
+          <AppContainer>
+            <Header/>
+            <Routes>
+              <Route path="/cadastro" element={<Auth />} /> {}
+              <Route path="/adicionar-produto" element={<AdicionarProduto />} />
+              <Route path="/" element={<TodosOsProdutos />} />
+            </Routes>
+          </AppContainer>
+        </CarrinhoProvider>
       </ProdutoProvider>
     </Router>
   );

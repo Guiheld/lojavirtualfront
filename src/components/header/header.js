@@ -38,7 +38,7 @@ function IconesHeader() {
                 </Link>
             </Icone>
             <Icone>
-                <Link to="/home">
+                <Link to="/">
                     <img src={home} alt="home" />
                 </Link>
             </Icone>
