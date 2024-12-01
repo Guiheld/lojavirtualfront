@@ -30,7 +30,7 @@ function TodosOsProdutos() {
                             R$ {prod.preco ? prod.preco.toFixed(2) : 'Preço indisponível'}
                         </ProdutoPreco>
                         {!carrinhoItems.find(item => item.id === produto.id) ? (
-                            <Botao onClick={() => addToCarrinho(produto)}>Adicionar ao Carrinho</Botao>
+                            <Botao onClick={() => addToCarrinho(prod)}>Adicionar ao Carrinho</Botao>
                         ) : (
                             <Botao remover onClick={() => removeFromCarrinho(produto.id)}>
                                 Remover do Carrinho

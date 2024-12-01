@@ -39,7 +39,7 @@ const Auth = () => {
     setMessage('');
     try {
       if (isLogin) {
-        const response = await api.post('/login', {  // Corrigido para a rota de login
+        const response = await api.post('/users/login', { 
           email: formData.email,
           password: formData.password
         });
@@ -47,7 +47,7 @@ const Auth = () => {
         localStorage.setItem('token', response.data.token);
         navigate('/');
       } else {
-        const response = await api.post('/register', {  // Corrigido para a rota de cadastro
+        const response = await api.post('/users/register', { 
           name: formData.name,
           email: formData.email,
           password: formData.password

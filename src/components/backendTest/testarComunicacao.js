@@ -17,7 +17,6 @@ const TestConnection = () => {
 
       // Atualiza o estado com a mensagem recebida
       setMessage(`Conexão bem-sucedida: ${data.message}`);
-      console.log(`Mensagem do back: ${data.message}`);
     } catch (error) {
       console.error('Erro ao se conectar:', error);
       setMessage('Erro ao se conectar ao backend.');

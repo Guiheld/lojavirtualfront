@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 import perfil from '../../imagens/icones/accountCircle.svg';
 import sacola from '../../imagens/icones/carrin.svg';
@@ -7,19 +7,26 @@ import home from '../../imagens/icones/home.svg';
 
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
+import { AuthContext } from '../../context/authContext'; // Importe o contexto
 
 function Header() {
+    const { user, isAuthenticated } = useContext(AuthContext); // Obtenha os dados do usuário
+
     return (
         <HeaderContainer>
-            <IconesHeader/>
+            <UserInfo>
+                {isAuthenticated ? (
+                    <span>Bem-vindo, {user?.email || 'Usuário'}!</span>
+                ) : (
+                    <span>Olá, visitante!</span>
+                )}
+            </UserInfo>
+            <IconesHeader />
         </HeaderContainer>
-    )
+    );
 }
 
-
 function IconesHeader() {
-    
-
     return (
         <Icones>
             <IconeAuth>
@@ -46,7 +53,14 @@ function IconesHeader() {
     );
 }
 
-//estilo para o header
+// Estilo adicional para o nome do usuário
+const UserInfo = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 14px;
+    color: #333;
+`;
 
 const Icone = styled.li`
     margin-right: 40px;
@@ -59,17 +73,6 @@ const Icones = styled.ul`
     align-items: center;
 `;
 
-const Badge = styled.span`
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: #FF4C4C;
-    color: #FFF;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 12px;
-`;
-
 const IconeAuth = styled.li`
     margin-right: 40px;
     width: 25px;
@@ -79,6 +82,7 @@ const HeaderContainer = styled.header`
     background-color: #FFF;
     display: flex;
     justify-content: center;
+    position: relative;
 `;
 
-export default Header
+export default Header;

@@ -23,7 +23,6 @@ export const ProdutoProvider = ({ children }) => {
                 ...produto,
                 preco: parseFloat(produto.preco),
             }));
-            console.log('Produtos recebidos:', produtos);
             setProduto(produtos);
             setLoading(false);
         } catch (error) {
