@@ -40,7 +40,13 @@ export const ProdutoProvider = ({ children }) => {
                 ...novoProduto,
                 preco: parseFloat(novoProduto.preco),
             };
-            const response = await api.post('/products', produtoToAdd);
+            const token = localStorage.getItem('fornecedoresToken');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+            const response = await api.post('/products', produtoToAdd, config);
             setProduto([...produto, response.data]);
         } catch (error) {
             console.error('Erro ao adicionar Produto:', error);
@@ -51,7 +57,13 @@ export const ProdutoProvider = ({ children }) => {
     // Função para deletar um produto
     const deleteProduto = async (id) => {
         try {
-            await api.delete(`/products/${id}`);
+            const token = localStorage.getItem('fornecedoresToken');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+            await api.delete(`/products/${id}`, config);
             setProduto(produto.filter((item) => item.id !== id));
         } catch (error) {
             console.error('Erro ao deletar produto:', error);

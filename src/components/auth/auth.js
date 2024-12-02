@@ -55,6 +55,7 @@ const Auth = () => {
         setMessage('Cadastro bem-sucedido! Faça login.');
         setIsLogin(true);
       }
+      window.location.reload();
     } catch (error) {
       console.error('Erro na autenticação:', error);
       if (error.response && error.response.data && error.response.data.message) {
@@ -68,10 +69,10 @@ const Auth = () => {
   return (
     <Container>
       <ToggleContainer>
-        <ToggleButton active={isLogin} onClick={handleToggle}>
+        <ToggleButton isActive={isLogin} onClick={handleToggle}>
           Login
         </ToggleButton>
-        <ToggleButton active={!isLogin} onClick={handleToggle}>
+        <ToggleButton isActive={!isLogin} onClick={handleToggle}>
           Cadastro
         </ToggleButton>
       </ToggleContainer>
@@ -130,8 +131,8 @@ const ToggleContainer = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background-color: ${(props) => (props.active ? '#326589' : '#f0f0f0')};
-  color: ${(props) => (props.active ? '#ffffff' : '#000000')};
+  background-color: ${(props) => (props.isActive ? '#326589' : '#f0f0f0')};
+  color: ${(props) => (props.isActive ? '#ffffff' : '#000000')};
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -139,6 +140,7 @@ const ToggleButton = styled.button`
   margin: 0 5px;
   font-weight: bold;
 `;
+
 
 const Form = styled.form`
   display: flex;

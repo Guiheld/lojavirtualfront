@@ -64,7 +64,7 @@ function AdicionarProduto() {
                         name="nome"
                         value={form.nome}
                         onChange={handleChange}
-                        placeholder="Ex: Camiseta Azul"
+                        placeholder="Ex: Computador"
                         required
                     />
                 </Campo>

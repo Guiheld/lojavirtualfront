@@ -8,6 +8,8 @@ import AdicionarProduto from './components/produto/adicionarProduto';
 import TestConnection from './components/backendTest/testarComunicacao';
 import TodosOsProdutos from './components/home/homeTodosProdutos';
 import Carrinho from './components/carrinho/carrinho';
+import MensagemDeErro from './components/mensagemErro/mensagemErro';
+import Fornecedor from './components/fornecedor/fornecedor';
 
 import Header from './components/header/header';
 
@@ -19,8 +21,10 @@ import styled from 'styled-components';
 
 const TemQueLogar = ({ children }) => {
   const { isAuthenticated } = useContext(AuthContext);
-  console.log("DEBUG FRONTEND - AUTENTICADO? ", isAuthenticated);
-  return isAuthenticated ? children : <Navigate to="/cadastro" />;
+  if(!isAuthenticated){
+    return <MensagemDeErro mensagem="Você precisa estar logado para acessar esta página." />;
+  }
+  return children;
 };
 
 function App() {
@@ -33,9 +37,12 @@ function App() {
             <AppContainer>
               <Header/>
               <Routes>
+
                 {/* nao precisa logar */}
                 <Route path="/" element={<TodosOsProdutos />} />
                 <Route path="/cadastro" element={<Auth />} /> 
+                <Route path="/fornecedores" element={<Fornecedor />} />
+
                 {/* precisa logar */}
                 <Route path="/adicionar-produto" element={
                   <TemQueLogar>
@@ -47,6 +54,7 @@ function App() {
                     <Carrinho />
                   </TemQueLogar>
                 } />
+
               </Routes>
             </AppContainer>
           </CarrinhoProvider>

@@ -14,60 +14,73 @@ export const CarrinhoProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchCarrinho = async () => {
-            setLoading(true);
-            setError(null); // Reseta o erro antes de tentar novamente
-            try {
-                // Fazendo a requisição para pegar os itens do carrinho do backend
-                const response = await api.get(`/carrinho/${userId}`);
-
-                // Agora que a resposta é um array de produtos, processamos diretamente
-                if (response.data?.length > 0) {
-                    // Processando os produtos para o formato esperado
-                    const itensProcessados = response.data.map(produto => ({
-                        id: produto.id,
-                        nome: produto.nome,
-                        preco: produto.preco,
-                        descricao: produto.descricao,
-                        quantity: produto.quantity || 0,  
-                        total: produto.total || 0, 
-                    }));
-                    setCarrinhoItems(itensProcessados);  // Atualizando o estado com os itens processados
-                } else {
-                    setCarrinhoItems([]);  // Caso não haja produtos, limpa o carrinho
+        if (userId) {
+            const fetchCarrinho = async () => {
+                setLoading(true);
+                setError(null); // Reseta o erro antes de tentar novamente
+                try {
+                    const token = localStorage.getItem('token');
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
+    
+                    const response = await api.get(`/carrinho/${userId}`, config);
+    
+                    if (response.data && response.data.produtos) {
+                        // Processando os produtos para o formato esperado
+                        const itensProcessados = response.data.produtos.map(produto => ({
+                            id: produto.id,
+                            nome: produto.nome,
+                            preco: produto.preco,
+                            descricao: produto.descricao,
+                            quantity: produto.CarrinhoProduto.quantity || 0, // Relacionamento do carrinho
+                            total: produto.CarrinhoProduto.total || 0,       // Relacionamento do carrinho
+                        }));
+                        setCarrinhoItems(itensProcessados); // Atualizando o estado com os itens processados
+                    } else {
+                        setCarrinhoItems([]); // Caso não haja produtos, limpa o carrinho
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar carrinho:', error);
+                    setError('Erro ao carregar o carrinho.'); // Armazenando a mensagem de erro no estado
+                } finally {
+                    setLoading(false); // Finalizando o estado de carregamento
                 }
-            } catch (error) {
-                console.error('Erro ao buscar carrinho:', error);
-                setError('Erro ao carregar o carrinho.');  // Armazenando a mensagem de erro no estado
-            } finally {
-                setLoading(false);  // Finalizando o estado de carregamento
-            }
-        };
-
-        fetchCarrinho();  // Chamando a função para carregar os dados ao montar o componente
+            };
+    
+            fetchCarrinho(); // Chamando a função para carregar os dados ao montar o componente
+        }
     }, [userId]);
+    
 
     const addToCarrinho = async (produto) => {
         setLoading(true);
         try {
-            const itemExistente = carrinhoItems.find(item => item.id === produto.id);
-            const quantidade = itemExistente ? itemExistente.quantity + 1 : 1;
+            const quantidade = carrinhoItems.some(item => item.id === produto.id) 
+                ? carrinhoItems.find(item => item.id === produto.id).quantity + 1 
+                : 1;
 
-            // Envia a requisição para adicionar o produto ao carrinho
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
             const response = await api.post('/carrinho/add', {
-                userId,
                 productId: produto.id,
-                quantity: quantidade,
-            });
-
-            if (response.data?.Products) {
-                const itensProcessados = response.data.map(produto => ({
+                quantity: quantidade
+            }, config);
+    
+            if (response.data && response.data.produtos) {
+                const itensProcessados = response.data.produtos.map(produto => ({
                     id: produto.id,
                     nome: produto.nome,
                     preco: produto.preco,
                     descricao: produto.descricao,
-                    quantity: produto.quantity || 0,  
-                    total: produto.total || 0, 
+                    quantity: produto.CarrinhoProduto.quantity, // Obtém do relacionamento
+                    total: produto.CarrinhoProduto.total       // Obtém do relacionamento
                 }));
                 setCarrinhoItems(itensProcessados);
             }
@@ -76,14 +89,21 @@ export const CarrinhoProvider = ({ children }) => {
             setError(error);
         } finally {
             setLoading(false);
+            window.location.reload()
         }
     };
-
+    
     const removeFromCarrinho = async (produtoId) => {
         setLoading(true);
         try {
-            const response = await api.delete(`/carrinho/remove/${produtoId}`); // Não precisa passar o body aqui
-    
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+            const response = await api.delete(`/carrinho/remove/${produtoId}`, config); // Não precisa passar o body aqui
+            console.log('Resposta do servidor:', response);
             if (response.data?.Products) {
                 const itensProcessados = response.data.map(produto => ({
                     id: produto.id,
@@ -99,7 +119,7 @@ export const CarrinhoProvider = ({ children }) => {
             console.error('Erro ao remover do carrinho:', error);
             setError(error);
         } finally {
-            setLoading(true);
+            setLoading(false);
         }
     };
 

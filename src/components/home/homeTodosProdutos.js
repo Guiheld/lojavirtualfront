@@ -1,13 +1,27 @@
 import React, { useContext } from 'react';
-import { ProdutoContext  } from '../../context/produtoContext';
+import { ProdutoContext } from '../../context/produtoContext';
 import styled from 'styled-components';
 import { CarrinhoContext } from '../../context/carrinhoContext';
+import { AuthContext } from '../../context/authContext'; // Importa o AuthContext
 import { useNavigate } from 'react-router-dom';
+import FornecedorCheck from './../fornecedor/fornecedorCheck';
 
 function TodosOsProdutos() {
     const { produto, deleteProduto } = useContext(ProdutoContext);
     const { carrinhoItems, addToCarrinho, removeFromCarrinho } = useContext(CarrinhoContext);
+    const { isAuthenticated } = useContext(AuthContext); // Verifica se o usuário está autenticado
     const navigate = useNavigate();
+
+    // Verifica se o usuário logado é um fornecedor
+    const isFornecedor = FornecedorCheck();
+
+    const handleAddToCarrinho = (prod) => {
+        if (!isAuthenticated) {
+            alert('Você precisa estar logado para adicionar produtos ao carrinho.');
+            return;
+        }
+        addToCarrinho(prod);
+    };
 
     const handleDelete = (id) => {
         if (window.confirm('Tem certeza que deseja deletar este produto?')) {
@@ -29,16 +43,27 @@ function TodosOsProdutos() {
                         <ProdutoPreco>
                             R$ {prod.preco ? prod.preco.toFixed(2) : 'Preço indisponível'}
                         </ProdutoPreco>
-                        {!carrinhoItems.find(item => item.id === produto.id) ? (
-                            <Botao onClick={() => addToCarrinho(prod)}>Adicionar ao Carrinho</Botao>
-                        ) : (
-                            <Botao remover onClick={() => removeFromCarrinho(produto.id)}>
-                                Remover do Carrinho
-                            </Botao>
+                        {!isFornecedor && (
+                            <>
+                                {!carrinhoItems.find((item) => item.id === prod.id) ? (
+                                    <Botao onClick={() => handleAddToCarrinho(prod)}>Adicionar ao Carrinho</Botao>
+                                ) : (
+                                    <Botao remover onClick={() => removeFromCarrinho(prod.id)}>
+                                        Remover do Carrinho
+                                    </Botao>
+                                )}
+                            </>
                         )}
-                        <Botao atualizar onClick={() => handleUpdate(prod.id)}>
-                            Atualizar
-                        </Botao>
+                        {isFornecedor && (
+                            <>
+                                <Botao atualizar onClick={() => handleUpdate(prod.id)}>
+                                    Atualizar
+                                </Botao>
+                                <Botao remover onClick={() => handleDelete(prod.id)}>
+                                    Deletar
+                                </Botao>
+                            </>
+                        )}
                     </ProdutoCard>
                 ))}
             </TodosOsProdutosWrapper>
@@ -46,7 +71,7 @@ function TodosOsProdutos() {
     );
 }
 
-// Estilização
+// Estilização (permanece inalterada)
 const Home = styled.section`
     background-color: #ebecee;
     padding-bottom: 20px;
