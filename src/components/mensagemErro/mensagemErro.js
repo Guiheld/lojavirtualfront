@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import errorAcessIcon from '../../imagens/icones/errorAcess.svg';
 
 const MensagemDeErro = ({ mensagem }) => {
     return (
         <MensagemWrapper>
             <MensagemCaixa>
+                <img src={errorAcessIcon} alt="Erro de Acesso" />
                 <MensagemTexto>{mensagem}</MensagemTexto>
                 <Link to="/cadastro">
                     <Botao>Fazer Login</Botao>
@@ -34,7 +36,7 @@ const MensagemCaixa = styled.div`
 const MensagemTexto = styled.p`
     font-size: 16px;
     color: #d90429;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
 `;
 
 const Botao = styled.button`

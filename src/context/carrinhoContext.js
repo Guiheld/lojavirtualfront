@@ -119,6 +119,7 @@ export const CarrinhoProvider = ({ children }) => {
             console.error('Erro ao remover do carrinho:', error);
             setError(error);
         } finally {
+            window.location.reload()
             setLoading(false);
         }
     };

@@ -74,7 +74,13 @@ export const ProdutoProvider = ({ children }) => {
     // Função para atualizar um produto
     const updateProduto = async (produtoUpgrade) => {
         try {
-            const response = await api.put(`/products/${produtoUpgrade.id}`, produtoUpgrade);
+            const token = localStorage.getItem('fornecedoresToken');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+            const response = await api.put(`/products/${produtoUpgrade.id}`, produtoUpgrade, config);
             setProduto(produto.map((item) => (item.id === produtoUpgrade.id ? response.data : item)));
         } catch (error) {
             console.error('Erro ao atualizar produto:', error);

@@ -1,19 +1,38 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { ProdutoContext } from '../../context/produtoContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-function AdicionarProduto() {
-    const { addProduto } = useContext(ProdutoContext);
+function EditarProduto() {
+    const { produto, updateProduto } = useContext(ProdutoContext);
     const navigate = useNavigate();
+    const { id } = useParams();
+    const produtoId = parseInt(id);
+
+    const produtoEditar = produto.find(produto => produto.id === produtoId);
+
     const [form, setForm] = useState({
         nome: '',
         descricao: '',
         preco: '',
-        estoque: 100
+        estoque: 100 
     });
     const [mensagem, setMensagem] = useState('');
     const [error, setError] = useState(false);
+
+    useEffect(() => {
+        if (produtoEditar) {
+            setForm({
+                nome: produtoEditar.nome,
+                descricao: produtoEditar.descricao,
+                preco: produtoEditar.preco,
+                estoque: produtoEditar.estoque
+            });
+        } else {
+            setMensagem('Produto não encontrado.');
+            setError(true);
+        }
+    }, [produtoEditar]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -25,38 +44,41 @@ function AdicionarProduto() {
 
         if (nome && descricao && preco && estoque) {
             try {
-                await addProduto({
+                await updateProduto({
+                    id: produtoId,
                     nome,
                     descricao,
                     preco: parseFloat(preco),
-                    estoque: parseInt(estoque, 10)
+                    estoque: parseInt(estoque)
                 });
-                setMensagem('Produto adicionado com sucesso!');
+                setMensagem('Produto atualizado com sucesso!');
                 setError(false);
-                setForm({
-                    nome: '',
-                    descricao: '',
-                    preco: '',
-                    estoque: 100
-                });
                 setTimeout(() => {
                     navigate('/');
                 }, 2000);
             } catch (error) {
-                setMensagem('Erro ao adicionar produto.');
+                setMensagem('Erro ao atualizar o produto.');
                 setError(true);
                 console.error(error);
             }
         } else {
-            setMensagem('Preencha todos os campos.');
+            setMensagem('Por favor, preencha os campos obrigatorios.');
             setError(true);
         }
     };
 
+    if (!produtoEditar) {
+        return (
+            <EditarProdutoContainer>
+                <Mensagem error={error}>{mensagem}</Mensagem>
+            </EditarProdutoContainer>
+        );
+    }
+
     return (
-        <AdicionarProdutoContainer>
+        <EditarProdutoContainer>
             <Form onSubmit={handleSubmit}>
-                <Titulo>Adicionar Novo Produto</Titulo>
+                <Titulo>Atualizar Produto</Titulo>
                 <Campo>
                     <Label>Nome do Produto</Label>
                     <Input
@@ -64,7 +86,7 @@ function AdicionarProduto() {
                         name="nome"
                         value={form.nome}
                         onChange={handleChange}
-                        placeholder="Ex: Computador"
+                        placeholder="Ex: nome produto"
                         required
                     />
                 </Campo>
@@ -75,7 +97,7 @@ function AdicionarProduto() {
                         name="descricao"
                         value={form.descricao}
                         onChange={handleChange}
-                        placeholder="Descrição do produto"
+                        placeholder="Descrição"
                         required
                     />
                 </Campo>
@@ -86,7 +108,7 @@ function AdicionarProduto() {
                         name="preco"
                         value={form.preco}
                         onChange={handleChange}
-                        placeholder="29.99"
+                        placeholder="1.99"
                         step="0.01"
                         required
                     />
@@ -102,20 +124,22 @@ function AdicionarProduto() {
                         required
                     />
                 </Campo>
-                <BotaoCadastrar type="submit">Adicionar Produto</BotaoCadastrar>
+                <BotaoAtualizar type="submit">Atualizar Produto</BotaoAtualizar>
                 {mensagem && <Mensagem error={error}>{mensagem}</Mensagem>}
             </Form>
-        </AdicionarProdutoContainer>
+        </EditarProdutoContainer>
     );
 }
 
-// Estilos CSS
-const AdicionarProdutoContainer = styled.div`
+// estilo
+
+
+const EditarProdutoContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 60px;
-    background-color: #ebecee;
+    padding: 40px;
+    background-color: #f5f5f5;
     min-height: 80vh;
 `;
 
@@ -153,9 +177,9 @@ const Input = styled.input`
     font-size: 16px;
 `;
 
-const BotaoCadastrar = styled.button`
+const BotaoAtualizar = styled.button`
     width: 100%;
-    background-color: #EB9B00;
+    background-color: #00A8E8;
     color: white;
     padding: 14px 20px;
     border: none;
@@ -165,7 +189,7 @@ const BotaoCadastrar = styled.button`
     font-weight: bold;
 
     &:hover {
-        background-color: #d88e00;
+        background-color: #008dc7;
     }
 `;
 
@@ -176,4 +200,5 @@ const Mensagem = styled.p`
     margin-top: 20px;
 `;
 
-export default AdicionarProduto;
+
+export default EditarProduto;

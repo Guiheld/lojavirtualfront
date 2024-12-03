@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Importando axios
+import axios from 'axios';
+import perfil from '../../imagens/icones/accountCircle.svg';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080', // URL do seu backend
+  baseURL: 'http://localhost:8080',
 });
 
 const Auth = () => {
@@ -39,15 +40,16 @@ const Auth = () => {
     setMessage('');
     try {
       if (isLogin) {
-        const response = await api.post('/users/login', { 
+        const response = await api.post('/users/login', {
           email: formData.email,
           password: formData.password
         });
         setMessage('Login bem-sucedido!');
         localStorage.setItem('token', response.data.token);
+        localStorage.removeItem('fornecedoresToken');
         navigate('/');
       } else {
-        const response = await api.post('/users/register', { 
+        const response = await api.post('/users/register', {
           name: formData.name,
           email: formData.email,
           password: formData.password
@@ -68,6 +70,8 @@ const Auth = () => {
 
   return (
     <Container>
+      <Icone><img src={perfil} alt="Account User Icon" /></Icone>
+      <Title>{isLogin ? 'Login' : 'Cadastro'}</Title>
       <ToggleContainer>
         <ToggleButton isActive={isLogin} onClick={handleToggle}>
           Login
@@ -112,35 +116,64 @@ const Auth = () => {
   );
 };
 
-// codigo estilos
+// Estilo 
 
+const Icone = styled.div`
+  cursor: pointer;
+  align: center;
+  padding-left: 167px;
+  margin: 10px;
+  width: 50px;
+  height: 50px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+`;
 
 const Container = styled.div`
-  width: 400px;
-  margin: 50px auto;
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 80px auto;
+  background-color: #f9f9f9;
+  padding: 40px;
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  color: #333333;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 24px;
 `;
 
 const ToggleContainer = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-bottom: 20px;
+  border-bottom: 1px solid #d1d1d1;
+  padding-bottom: 10px;
 `;
 
 const ToggleButton = styled.button`
-  background-color: ${(props) => (props.isActive ? '#326589' : '#f0f0f0')};
-  color: ${(props) => (props.isActive ? '#ffffff' : '#000000')};
+  flex: 1;
+  background: none;
   border: none;
-  padding: 10px 20px;
+  border-bottom: ${(props) => (props.isActive ? '2px solid #0073e6' : 'none')};
+  color: ${(props) => (props.isActive ? '#0073e6' : '#666666')};
+  font-size: 16px;
+  padding: 10px;
+  font-weight: ${(props) => (props.isActive ? 'bold' : 'normal')};
   cursor: pointer;
-  border-radius: 4px;
-  margin: 0 5px;
-  font-weight: bold;
+  transition: color 0.3s, border-bottom 0.3s;
+  &:hover {
+    color: #0073e6;
+  }
 `;
-
 
 const Form = styled.form`
   display: flex;
@@ -148,25 +181,38 @@ const Form = styled.form`
 `;
 
 const Input = styled.input`
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #cccccc;
+  border: 1px solid #d1d1d1;
   border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  &:focus {
+    border-color: #0073e6;
+    outline: none;
+  }
 `;
 
 const SubmitButton = styled.button`
-  background-color: #326589;
+  background-color: #0073e6;
   color: #ffffff;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #005bb5;
+  }
 `;
 
 const Message = styled.p`
-  color: ${(props) => (props.error ? 'red' : 'green')};
+  color: ${(props) => (props.error ? '#d9534f' : '#5cb85c')};
   text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
 `;
 
 export default Auth;

@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { CarrinhoContext } from '../../context/carrinhoContext';
 import axios from 'axios'; // Importando axios
+import deleteIcon from '../../imagens/icones/removeProduto.svg';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080', // URL do seu backend
@@ -59,93 +60,103 @@ function Carrinho() {
                 }
             }
         } catch (error) {
-            console.error('Erro ao processar pagamento:', error);
-            setMensagem('Erro ao processar pagamento.');
+            console.error('Obrigado por testar!. Pagamento nao incluido na entrega.', error);
+            setMensagem('Obrigado por testar!. Pagamento nao incluido na entrega.');
         }
     };
 
     return (
         <CarrinhoContainer>
-            <TituloCarrinho>Carrinho de Compras</TituloCarrinho>
             {carrinhoItems.length === 0 ? (
-                <p style={{ textAlign: 'center' }}>Seu carrinho está vazio.</p>
+                <TituloCarrinho>Seu Carrinho de Compras esta vazio! </TituloCarrinho>
             ) : (
                 <>
-                    <ListaCarrinho>
-                        {carrinhoItems.map(item => (
-                            <ItemCarrinho key={item.id}>
-                                <NomeLivro>{item.nome}</NomeLivro>
-                                <BotaoRemover onClick={() => removeFromCarrinho(item.id)}>Remover</BotaoRemover>
-                            </ItemCarrinho>
-                        ))}
-                    </ListaCarrinho>
-                    <Total>Total: R$ {valorTotal.toFixed(2)}</Total>
-                    <FormPagamento onSubmit={handleSubmit}>
-                        <h3>Processar Pagamento</h3>
-                        <Campo>
-                            <Label>Escolha o Método de Pagamento</Label>
-                            <select
-                                value={metodoPagamento}
-                                onChange={(e) => setMetodoPagamento(e.target.value)}
-                                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #CCC' }}
-                            >
-                                <option value="credit-card">Cartão de Crédito</option>
-                                <option value="pix">PIX</option>
-                            </select>
-                        </Campo>
-                        {metodoPagamento === 'credit-card' && (
-                            <>
-                                <Campo>
-                                    <Label>Número do Cartão</Label>
-                                    <Input
-                                        type="text"
-                                        name="numeroCartao"
-                                        value={form.numeroCartao}
-                                        onChange={handleChange}
-                                        placeholder="1234 5678 9012 3456"
-                                        required
-                                    />
-                                </Campo>
-                                <Campo>
-                                    <Label>CVV</Label>
-                                    <Input
-                                        type="text"
-                                        name="cvv"
-                                        value={form.cvv}
-                                        onChange={handleChange}
-                                        placeholder="123"
-                                        required
-                                    />
-                                </Campo>
-                                <Campo>
-                                    <Label>Data de Validade</Label>
-                                    <Input
-                                        type="text"
-                                        name="dataValidade"
-                                        value={form.dataValidade}
-                                        onChange={handleChange}
-                                        placeholder="MM/AA"
-                                        required
-                                    />
-                                </Campo>
-                            </>
-                        )}
-                        {metodoPagamento === 'pix' && (
+                    <div>
+                        <TituloCarrinho>Seu Carrinho de Compras</TituloCarrinho>
+                        <CarrinhoListaContainer>
+                            <ListaCarrinho>
+                                {carrinhoItems.map(item => (
+                                    <ItemCarrinho key={item.id}>
+                                    <NomeLivro><b>{item.nome}</b></NomeLivro>
+                                    <div className="info">
+                                      <Icone onClick={() => removeFromCarrinho(item.id)}><img src={deleteIcon} alt="Remover Produto" /></Icone>
+                                      <PrecoProduto>R$ {item.preco.toFixed(2)}</PrecoProduto>
+                                    </div>
+                                  </ItemCarrinho>
+                                ))}
+                            </ListaCarrinho>
+                            <hr></hr>
+                            <Total><b>Total</b>: R$ {valorTotal.toFixed(2)}</Total>
+                        </CarrinhoListaContainer>
+                    </div>
+                    <div>
+                    <TituloCarrinho>Pagamento</TituloCarrinho>
+                        <FormPagamento onSubmit={handleSubmit}>
+                            <h3>Processar Pagamento</h3>
                             <Campo>
-                                <Label>Código PIX</Label>
-                                <Input
-                                    type="text"
-                                    name="pix"
-                                    value={form.pix}
-                                    onChange={handleChange}
-                                    placeholder="Insira o código PIX"
-                                    required
-                                />
+                                <select
+                                    value={metodoPagamento}
+                                    onChange={(e) => setMetodoPagamento(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #CCC' }}
+                                >
+                                    <option value="credit-card">Cartão de Crédito/Debito</option>
+                                    <option value="pix">PIX</option>
+                                </select>
                             </Campo>
-                        )}
-                        <BotaoPagamento type="submit">Confirmar Pagamento</BotaoPagamento>
-                        {mensagem && <Mensagem>{mensagem}</Mensagem>}
-                    </FormPagamento>
+                            {metodoPagamento === 'credit-card' && (
+                                <>
+                                    <Campo>
+                                        <Label>Número do Cartão</Label>
+                                        <Input
+                                            type="text"
+                                            name="numeroCartao"
+                                            value={form.numeroCartao}
+                                            onChange={handleChange}
+                                            placeholder="XXXX XXXX XXXX XXXX"
+                                            required
+                                        />
+                                    </Campo>
+                                    <Campo>
+                                        <Label>CVV</Label>
+                                        <Input
+                                            type="text"
+                                            name="cvv"
+                                            value={form.cvv}
+                                            onChange={handleChange}
+                                            placeholder="XXX"
+                                            required
+                                        />
+                                    </Campo>
+                                    <Campo>
+                                        <Label>Data de Validade</Label>
+                                        <Input
+                                            type="text"
+                                            name="dataValidade"
+                                            value={form.dataValidade}
+                                            onChange={handleChange}
+                                            placeholder="MM/AA"
+                                            required
+                                        />
+                                    </Campo>
+                                </>
+                            )}
+                            {metodoPagamento === 'pix' && (
+                                <Campo>
+                                    <Label>Código PIX</Label>
+                                    <Input
+                                        type="text"
+                                        name="pix"
+                                        value={form.pix}
+                                        onChange={handleChange}
+                                        placeholder="Insira o código PIX"
+                                        required
+                                    />
+                                </Campo>
+                            )}
+                            <BotaoPagamento type="submit">Confirmar Pagamento</BotaoPagamento>
+                            {mensagem && <Mensagem>{mensagem}</Mensagem>}
+                        </FormPagamento>
+                    </div>
                 </>
             )}
         </CarrinhoContainer>
@@ -154,36 +165,75 @@ function Carrinho() {
 
 // - estilos da pagina
 
-const CarrinhoContainer = styled.div`
-    padding: 40px;
-    background-color: #f5f5f5;
-    min-height: 80vh;
+const Icone = styled.div`
+  cursor: pointer;
+  margin: 10px;
+  width: 30px;
+  height: 30px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
-const TituloCarrinho = styled.h2`
-    color: #EB9B00;
-    font-size: 36px;
-    text-align: center;
-    margin-bottom: 20px;
+const CarrinhoContainer = styled.div`
+  padding: 40px;
+  background-color: #ebecee;
+  min-height: 80vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+`;
+
+const CarrinhoListaContainer = styled.div`
+  background-color: #FFF;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 60vh;
 `;
 
 const ListaCarrinho = styled.ul`
-    list-style: none;
-    padding: 0;
-    margin-bottom: 30px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const TituloCarrinho = styled.h2`
+    color: #434343;
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 50px;
 `;
 
 const ItemCarrinho = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFF;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  
+  .info {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row-reverse;
     align-items: center;
-    background-color: #FFF;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+  }
 `;
 
 const NomeLivro = styled.p`
+    font-size: 18px;
+    margin: 0;
+`;
+const PrecoProduto = styled.p`
+    text-align: right;
     font-size: 18px;
     margin: 0;
 `;
@@ -192,9 +242,10 @@ const BotaoRemover = styled.button`
     background-color: #FF4C4C;
     color: #FFF;
     border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
+    padding: 6px 8px;
+    border-radius: 12px;
     cursor: pointer;
+    margin-left: 10px;
 
     &:hover {
         background-color: #d83a3a;

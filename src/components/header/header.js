@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/authContext';
-import FornecedorCheck from './../fornecedor/fornecedorCheck';
 import fornecedor from '../../imagens/icones/fornecedorIcone.svg';
 import adicionar from '../../imagens/icones/add.svg';
 import LogoutIcone from '../../imagens/icones/logoutIcon.svg';
@@ -11,10 +10,7 @@ import sacola from '../../imagens/icones/carrin.svg';
 import perfil from '../../imagens/icones/accountCircle.svg';
 
 function Header() {
-    const { user, isAuthenticated, logout } = useContext(AuthContext);
-
-    // Usa o FornecedorCheck para verificar se o usuário logado é um fornecedor
-    const isFornecedor = FornecedorCheck();
+    const { user, isAuthenticated, logout, isFornecedor, isUsuario } = useContext(AuthContext);
 
     useEffect(() => {
         console.log('isFornecedor:', isFornecedor); // Log para depuração
@@ -23,7 +19,7 @@ function Header() {
     return (
         <HeaderContainer>
             <NavLeft>
-                <IconesHeader isFornecedor={isFornecedor} />
+                <IconesHeader isFornecedor={isFornecedor} isUsuario={isUsuario} />
                 {isFornecedor && (
                     <FornecedorFunctions>
                         <Link to="/adicionar-produto">
@@ -38,23 +34,23 @@ function Header() {
                 {isAuthenticated ? (
                     <>
                         {isFornecedor ? (
-                            <span>Bem-vindo, Fornecedor <b>{user?.name || user?.email || 'Usuário'}! </b></span>
+                            <span>Bem-vindo, <b>Fornecedor {user?.name || user?.email || 'Usuário'}! </b></span>
                         ) : (
-                            <span>Bem-vindo, <b>{user?.name || user?.email || 'Usuário'}!</b></span>
+                            <span>Bem-vindo, <b> usuario {user?.name || user?.email || 'Usuário'}!</b></span>
                         )}
                         <LogoutIcon onClick={logout}>
                             <img src={LogoutIcone} alt="Logout" />
                         </LogoutIcon>
                     </>
                 ) : (
-                    <span>Olá, visitante!</span>
+                    <span>Olá, <b>visitante!</b></span>
                 )}
             </UserInfo>
         </HeaderContainer>
     );
 }
 
-function IconesHeader({ isFornecedor }) {
+function IconesHeader({isFornecedor={isFornecedor}, isUsuario={isUsuario}}) {
     return (
         <Icones>
             <Icone>
@@ -69,7 +65,7 @@ function IconesHeader({ isFornecedor }) {
             </IconeAuth>
             <IconeGroupRight>
                 {/* Exibe o carrinho somente se não for fornecedor */}
-                {!isFornecedor && (
+                {isUsuario && (
                     <Icone>
                         <Link to="/carrinho">
                             <img src={sacola} alt="Carrinho" />
@@ -132,13 +128,13 @@ const FornecedorFunctions = styled.div`
 `;
 
 const Icone = styled.li`
-    margin-right: 20px;
+    margin-right: 40px;
     width: 25px;
     position: relative;
 `;
 
 const IconeAuth = styled.li`
-    margin-right: 20px;
+    margin-right: 40px;
     width: 25px;
 `;
 
@@ -147,7 +143,7 @@ const Icones = styled.ul`
     align-items: center;
     list-style-type: none;
     padding: 0;
-    margin: 0;
+    margin: 1;
 `;
 
 const HeaderContainer = styled.header`
